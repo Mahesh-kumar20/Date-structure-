@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAXSIZE 100
+
+int stack[MAXSIZE];
+int top = -1;
+
+void push(int element) {
+    if (top == MAXSIZE - 1) {
+        printf("Stack Overflow\n");
+        return;
+    }
+    stack[++top] = element;
+}
+
+int pop() {
+    if (top == -1) {
+        printf("Stack Underflow\n");
+        return -1;
+    }
+    return stack[top--];
+}
+
+int peek() {
+    if (top == -1) {
+        printf("Stack is empty\n");
+        return -1;
+    }
+    return stack[top];
+}
+
+int main() {
+    int choice, element;
+    while (1) {
+        printf("\n1. Push\n2. Pop\n3. Peek\n4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                printf("Enter the element to push: ");
+                scanf("%d", &element);
+                push(element);
+                break;
+            case 2:
+                element = pop();
+                if (element != -1) {
+                    printf("Popped element: %d\n", element);
+                }
+                break;
+            case 3:
+                element = peek();
+                if (element != -1) {
+                    printf("Top element: %d\n", element);
+                }
+                break;
+            case 4:
+                exit(0);
+            default:
+                printf("Invalid choice\n");
+        }
+    }
+    return 0;
+}
