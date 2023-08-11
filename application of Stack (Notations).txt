@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+#define MAXSIZE 100
+
+int stack[MAXSIZE];
+int top = -1;
+
+void push(int element) {
+    if (top == MAXSIZE - 1) {
+        printf("Stack Overflow\n");
+        return;
+    }
+    stack[++top] = element;
+}
+
+int pop() {
+    if (top == -1) {
+        printf("Stack Underflow\n");
+        return -1;
+    }
+    return stack[top--];
+}
+
+int peek() {
+    if (top == -1) {
+        printf("Stack is empty\n");
+        return -1;
+    }
+    return stack[top];
+}
+
+int is_operator(char symbol) {
+    if (symbol == '+' || symbol == '-' || symbol == '*' || symbol == '/') {
+        return 1;
+    }
+    return 0;
+}
+
+int evaluate_postfix(char postfix[]) {
+    int i, operand1, operand2, result;
+    char symbol;
+    for (i = 0; postfix[i] != '\0'; i++) {
+        symbol = postfix[i];
+        if (isdigit(symbol)) {
+            push(symbol - '0');
+        } else if (is_operator(symbol)) {
+            operand2 = pop();
+            operand1 = pop();
+            switch (symbol) {
+                case '+':
+                    result = operand1 + operand2;
+                    break;
+                case '-':
+                    result = operand1 - operand2;
+                    break;
+                case '*':
+                    result = operand1 * operand2;
+                    break;
+                case '/':
+                    result = operand1 / operand2;
+                    break;
+            }
+            push(result);
+        }
+    }
+    return pop();
+}
+
+int main() {
+    char postfix[MAXSIZE];
+    printf("Enter a postfix expression: ");
+    scanf("%s", postfix);
+    int result = evaluate_postfix(postfix);
+    printf("Result: %d\n", result);
+    return 0;
+}

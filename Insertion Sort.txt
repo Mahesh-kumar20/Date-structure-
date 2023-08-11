@@ -1,0 +1,32 @@
+#include <stdio.h>
+
+void insertion_sort(int array[], int n) {
+    int i, j, temp;
+    for (i = 1; i < n; i++) {
+        temp = array[i];
+        j = i - 1;
+        while (j >= 0 && array[j] > temp) {
+            array[j + 1] = array[j];
+            j = j - 1;
+        }
+        array[j + 1] = temp;
+    }
+}
+
+int main() {
+    int array[] = {5, 2, 4, 6, 1, 3};
+    int n = sizeof(array) / sizeof(array[0]);
+    int i;
+    printf("Unsorted array: ");
+    for (i = 0; i < n; i++) {
+        printf("%d ", array[i]);
+    }
+    printf("\n");
+    insertion_sort(array, n);
+    printf("Sorted array: ");
+    for (i = 0; i < n; i++) {
+        printf("%d ", array[i]);
+    }
+    printf("\n");
+    return 0;
+}

@@ -1,0 +1,103 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+
+#define MAX_NODES 100
+#define MAX_EDGES 100
+
+struct Edge {
+    int src, dest, weight;
+};
+
+struct Graph {
+    int numNodes, numEdges;
+    struct Edge edges[MAX_EDGES];
+};
+
+struct Subset {
+    int parent;
+    int rank;
+};
+
+int find(struct Subset subsets[], int i) {
+    if (subsets[i].parent != i)
+        subsets[i].parent = find(subsets, subsets[i].parent);
+
+    return subsets[i].parent;
+}
+
+void Union(struct Subset subsets[], int x, int y) {
+    int xroot = find(subsets, x);
+    int yroot = find(subsets, y);
+
+    if (subsets[xroot].rank < subsets[yroot].rank)
+        subsets[xroot].parent = yroot;
+    else if (subsets[xroot].rank > subsets[yroot].rank)
+        subsets[yroot].parent = xroot;
+    else {
+        subsets[yroot].parent = xroot;
+        subsets[xroot].rank++;
+    }
+}
+
+int compare(const void* a, const void* b) {
+    struct Edge* a1 = (struct Edge*)a;
+    struct Edge* b1 = (struct Edge*)b;
+    return a1->weight - b1->weight;
+}
+
+void kruskal(struct Graph* graph) {
+    int i, j;
+    struct Subset subsets[MAX_NODES];
+    struct Edge result[MAX_NODES];
+    int e = 0;
+
+    for (i = 0; i < graph->numNodes; i++) {
+        subsets[i].parent = i;
+        subsets[i].rank = 0;
+    }
+
+    qsort(graph->edges, graph->numEdges, sizeof(graph->edges[0]), compare);
+
+    i = 0;
+    while (e < graph->numNodes - 1 && i < graph->numEdges) {
+        struct Edge next_edge = graph->edges[i++];
+
+        int x = find(subsets, next_edge.src);
+        int y = find(subsets, next_edge.dest);
+
+        if (x != y) {
+            result[e++] = next_edge;
+            Union(subsets, x, y);
+        }
+    }
+
+    printf("Edge \tWeight\n");
+    for (i = 0; i < e; i++)
+        printf("%d - %d \t%d\n", result[i].src, result[i].dest, result[i].weight);
+}
+
+int main() {
+    struct Graph graph;
+    int numNodes, numEdges, i, j;
+
+    printf("Enter the number of nodes: ");
+    scanf("%d", &numNodes);
+
+    graph.numNodes = numNodes;
+
+    printf("Enter the number of edges: ");
+    scanf("%d", &numEdges);
+
+    graph.numEdges = numEdges;
+
+    printf("Enter the edges and weights:\n");
+    for (i = 0; i < numEdges; i++) {
+        scanf("%d %d %d", &graph.edges[i].src, &graph.edges[i].dest, &graph.edges[i].weight);
+    }
+
+    kruskal(&graph);
+
+    return 0;
+}

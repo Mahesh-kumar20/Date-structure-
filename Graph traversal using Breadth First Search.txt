@@ -1,0 +1,106 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#define MAX_NODES 100
+
+struct Graph {
+    int numNodes;
+    int adjMatrix[MAX_NODES][MAX_NODES];
+};
+
+struct Queue {
+    int items[MAX_NODES];
+    int front;
+    int rear;
+};
+
+struct Queue* createQueue() {
+    struct Queue* queue = (struct Queue*)malloc(sizeof(struct Queue));
+    queue->front = -1;
+    queue->rear = -1;
+    return queue;
+}
+
+bool isEmpty(struct Queue* queue) {
+    if (queue->rear == -1)
+        return true;
+    else
+        return false;
+}
+
+void enqueue(struct Queue* queue, int value) {
+    if (queue->rear == MAX_NODES - 1)
+        printf("Queue is full\n");
+    else {
+        if (queue->front == -1)
+            queue->front = 0;
+        queue->rear++;
+        queue->items[queue->rear] = value;
+    }
+}
+
+int dequeue(struct Queue* queue) {
+    int item;
+    if (isEmpty(queue)) {
+        printf("Queue is empty\n");
+        item = -1;
+    } else {
+        item = queue->items[queue->front];
+        queue->front++;
+        if (queue->front > queue->rear) {
+            queue->front = -1;
+            queue->rear = -1;
+        }
+    }
+    return item;
+}
+
+void bfs(struct Graph* graph, int startNode) {
+    bool visited[MAX_NODES];
+    int i, j;
+    for (i = 0; i < graph->numNodes; i++)
+        visited[i] = false;
+
+    struct Queue* queue = createQueue();
+
+    visited[startNode] = true;
+    enqueue(queue, startNode);
+
+    while (!isEmpty(queue)) {
+        int currentNode = dequeue(queue);
+        printf("%d ", currentNode);
+
+        for (j = 0; j < graph->numNodes; j++) {
+            if (graph->adjMatrix[currentNode][j] == 1 && !visited[j]) {
+                visited[j] = true;
+                enqueue(queue, j);
+            }
+        }
+    }
+}
+
+int main() {
+    struct Graph graph;
+    int numNodes, i, j, startNode;
+
+    printf("Enter the number of nodes: ");
+    scanf("%d", &numNodes);
+
+    graph.numNodes = numNodes;
+
+    printf("Enter the adjacency matrix:\n");
+    for (i = 0; i < numNodes; i++) {
+        for (j = 0; j < numNodes; j++) {
+            scanf("%d", &graph.adjMatrix[i][j]);
+        }
+    }
+
+    printf("Enter the starting node: ");
+    scanf("%d", &startNode);
+
+    printf("BFS traversal: ");
+    bfs(&graph, startNode);
+
+    return 0;
+}
